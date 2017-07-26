@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity extends AppCompatActivity {
 
     @LayoutRes public abstract int getContentViewLayout();
-//    @IdRes public abstract int getFrameLayoutId();
+    @IdRes public abstract int getFrameLayoutId();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

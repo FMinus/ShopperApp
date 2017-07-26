@@ -9,6 +9,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.poc_post.poce_commerce.R;
 import com.poc_post.poce_commerce.adapters.ProductRecyclerViewAdapter;
@@ -50,6 +53,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     @BindView(R.id.product_list_swipeRefresh) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.productName_search_input) EditText productNameSearchInput;
     @BindView(R.id.products_list_sort_spinner) Spinner sortBySpinner;
+    @BindView(R.id.orders_overview) TextView ordersOverview;
 
     Map<Product, Integer> orders = new HashMap<>();
 
@@ -123,7 +127,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         orders.put(product, temp + quantity);
     }
 
-    public double total() {
+    public double total(Map<Product,Integer> orders) {
         double total = 0;
         for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
             total += entry.getValue() * entry.getKey().getPrice();
@@ -166,6 +170,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         if (products != null) {
             displayProducts(products);
         }
+        updateOverview(orders);
     }
 
     @Override
@@ -216,7 +221,8 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
             public void onClick(DialogInterface dialogInterface, int i) {
                 showToast(product.getName() + " : " + picker.getValue());
                 addProduct(product, picker.getValue());
-                showToast("total: " + total());
+                showToast("total: " + total(orders));
+                updateOverview(orders);
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -240,6 +246,22 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
             adapter = new ProductRecyclerViewAdapter(products, getContext(), this);
             productRecyclerView.setLayoutManager(new LinearLayoutManager(productRecyclerView.getContext()));
             productRecyclerView.setAdapter(adapter);
+        }
+    }
+
+    public int countProductsOrdered(Map<Product,Integer> orders){
+        int out = 0;
+        for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
+            out+= entry.getValue();
+        }
+        return out;
+    }
+
+    public void updateOverview(Map<Product,Integer> orders){
+        if(orders!= null){
+            int countProductsOrdered = countProductsOrdered(orders);
+            double totalOrdered =  total(orders);
+            ordersOverview.setText("products ordered: "+countProductsOrdered+" , total = "+totalOrdered+" DH");
         }
     }
 }
