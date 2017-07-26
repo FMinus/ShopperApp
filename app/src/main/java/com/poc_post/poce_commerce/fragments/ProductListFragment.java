@@ -29,6 +29,7 @@ import com.poc_post.poce_commerce.presenters.ProductListPresenter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -39,6 +40,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import java8.util.stream.Collectors;
+import java8.util.stream.StreamSupport;
 
 public class ProductListFragment extends BaseFragment implements ProductListContract.View {
 
@@ -126,11 +129,9 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     }
 
     public double total(Map<Product, Integer> orders) {
-        double total = 0;
-        for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
-            total += entry.getValue() * entry.getKey().getPrice();
-        }
-        return total;
+        return StreamSupport.stream(orders.entrySet())
+                .mapToDouble(entry -> entry.getKey().getPrice() * entry.getValue())
+                .sum();
     }
 
     private void setupSwipeRefresh(final Context context) {
