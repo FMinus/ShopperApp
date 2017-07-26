@@ -1,20 +1,12 @@
-package com.poc_post.poce_commerce;
+package com.poc_post.poce_commerce.activities;
 
-import android.support.design.widget.TabLayout;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 
+import com.poc_post.poce_commerce.R;
 import com.poc_post.poce_commerce.activities.BaseActivity;
-import com.poc_post.poce_commerce.adapters.ViewPagerAdapter;
-import com.poc_post.poce_commerce.entities.Product;
 import com.poc_post.poce_commerce.fragments.ProductListFragment;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import butterknife.BindView;
 
 public class MainActivity extends BaseActivity {
 

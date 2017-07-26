@@ -17,8 +17,11 @@ import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @LayoutRes public abstract int getContentViewLayout();
-    @IdRes public abstract int getFrameLayoutId();
+    @LayoutRes
+    public abstract int getContentViewLayout();
+
+    @IdRes
+    public abstract int getFrameLayoutId();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +30,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    public void showToast(String message){
+    public void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
@@ -37,6 +40,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(title);
         }
     }
+
     public boolean isNewlyCreated(Bundle savedState) {
         return savedState == null;
     }

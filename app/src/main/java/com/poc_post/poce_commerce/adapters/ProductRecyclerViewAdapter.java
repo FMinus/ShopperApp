@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.poc_post.poce_commerce.R;
-import com.poc_post.poce_commerce.contracts.ProductListContract;
+import com.poc_post.poce_commerce.screen_contracts.ProductListContract;
 import com.poc_post.poce_commerce.entities.Product;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
         this.listener = listener;
     }
 
-    public void displayProduct(Product product){
+    public void addProductToDisplay(Product product){
         products.add(product);
         notifyDataSetChanged();
     }
@@ -57,8 +57,6 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
         Glide.with(context)
                 .load(product.getPicture_url())
                 .into(holder.productPicture);
-
-        // TODO: 25/07/2017 download picture
     }
 
     @Override
@@ -66,7 +64,7 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
         return products.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         View mView;
         @BindView(R.id.product_item_name) TextView productName;
@@ -74,13 +72,13 @@ public class ProductRecyclerViewAdapter extends RecyclerView.Adapter<ProductRecy
         @BindView(R.id.product_item_icon) ImageView productPicture;
         @BindView(R.id.add_to_cart) ImageView addToCart;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             this.mView = itemView;
             ButterKnife.bind(this,mView);
         }
 
-        public void setText(TextView textView,String content){
+        void setText(TextView textView, String content){
             textView.setText((content == null) ? "" : content);
         }
     }

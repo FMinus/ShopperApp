@@ -9,9 +9,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.SpannableString;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,13 +21,14 @@ import android.widget.TextView;
 
 import com.poc_post.poce_commerce.R;
 import com.poc_post.poce_commerce.adapters.ProductRecyclerViewAdapter;
-import com.poc_post.poce_commerce.contracts.ProductListContract;
+import com.poc_post.poce_commerce.screen_contracts.ProductListContract;
 import com.poc_post.poce_commerce.di.components.DaggerProductComponent;
 import com.poc_post.poce_commerce.di.modules.ProductModule;
 import com.poc_post.poce_commerce.entities.Product;
 import com.poc_post.poce_commerce.presenters.ProductListPresenter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -127,7 +125,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         orders.put(product, temp + quantity);
     }
 
-    public double total(Map<Product,Integer> orders) {
+    public double total(Map<Product, Integer> orders) {
         double total = 0;
         for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
             total += entry.getValue() * entry.getKey().getPrice();
@@ -199,6 +197,13 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     }
 
     @Override
+    public void showProduct(Product product) {
+        if (product != null) {
+            displayProduct(product);
+        }
+    }
+
+    @Override
     public void addProductToCart(Product product) {
         showProductQuantitySpinner(product);
     }
@@ -249,19 +254,32 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         }
     }
 
-    public int countProductsOrdered(Map<Product,Integer> orders){
+    private void displayProduct(@NonNull Product product) {
+        if (adapter == null) {
+            adapter = new ProductRecyclerViewAdapter(products, getContext(), this);
+            productRecyclerView.setLayoutManager(new LinearLayoutManager(productRecyclerView.getContext()));
+            productRecyclerView.setAdapter(adapter);
+        }
+        if (products == null) {
+            products = new ArrayList<>();
+        }
+        this.products.add(product);
+        adapter.addProductToDisplay(product);
+    }
+
+    public int countProductsOrdered(Map<Product, Integer> orders) {
         int out = 0;
         for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
-            out+= entry.getValue();
+            out += entry.getValue();
         }
         return out;
     }
 
-    public void updateOverview(Map<Product,Integer> orders){
-        if(orders!= null){
+    public void updateOverview(Map<Product, Integer> orders) {
+        if (orders != null) {
             int countProductsOrdered = countProductsOrdered(orders);
-            double totalOrdered =  total(orders);
-            ordersOverview.setText("products ordered: "+countProductsOrdered+" , total = "+totalOrdered+" DH");
+            double totalOrdered = total(orders);
+            ordersOverview.setText("products ordered: " + countProductsOrdered + " , total = " + totalOrdered + " DH");
         }
     }
 }
