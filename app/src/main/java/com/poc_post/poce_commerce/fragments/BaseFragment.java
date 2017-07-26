@@ -49,7 +49,7 @@ public abstract class BaseFragment extends Fragment {
     @Override //4
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setAppbarTitle(getFragmentAppBarTitle());
+//        setAppbarTitle(getFragmentAppBarTitle());
 
         if(savedInstanceState==null){
             computeFreshData(context);

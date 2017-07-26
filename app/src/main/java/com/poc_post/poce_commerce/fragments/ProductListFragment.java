@@ -9,10 +9,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 
 import com.poc_post.poce_commerce.R;
 import com.poc_post.poce_commerce.adapters.ProductRecyclerViewAdapter;
@@ -23,6 +28,8 @@ import com.poc_post.poce_commerce.entities.Product;
 import com.poc_post.poce_commerce.presenters.ProductListPresenter;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +49,15 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     @BindView(R.id.products_recycler_view) RecyclerView productRecyclerView;
     @BindView(R.id.product_list_swipeRefresh) SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.productName_search_input) EditText productNameSearchInput;
+    @BindView(R.id.products_list_sort_spinner) Spinner sortBySpinner;
 
-    Map<Product,Integer> orders = new HashMap<>();
+    Map<Product, Integer> orders = new HashMap<>();
 
     @Override
     protected void viewCreatedHook(Bundle savedInstanceState) {
         super.viewCreatedHook(savedInstanceState);
         setupSwipeRefresh(getContext());
+        setupSortBySpinner();
 
         DaggerProductComponent.builder()
                 .applicationComponent(getApplicationComponent())
@@ -56,24 +65,73 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
                 .build().inject(this);
     }
 
-    public void addProduct(Product product,int quantity){
-        Integer alreadyOrdered = orders.get(product);
-        Integer temp = 0;
-        if(alreadyOrdered!= null){
-            temp+= alreadyOrdered;
-        }
-        orders.put(product,temp+quantity);
+    private void setupSortBySpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.product_sortBy, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortBySpinner.setAdapter(adapter);
+        sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sortProducts(parent.getItemAtPosition(position).toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
-    public double total(){
+    private void sortProducts(Comparator<Product> comparator) {
+        if (products != null) {
+            Collections.sort(products, comparator);
+        }
+        displayProducts(products);
+    }
+
+    private void sortProducts(String selectedOption) {
+        if (selectedOption.equals("Price")) {
+            sortProducts(sortyByPrice());
+        } else if (selectedOption.equals("Name")) {
+            sortProducts(sortyByName());
+        }
+    }
+
+    private Comparator<Product> sortyByName() {
+        return new Comparator<Product>() {
+            @Override
+            public int compare(Product p1, Product p2) {
+                return p1.getName().compareTo(p2.getName());
+            }
+        };
+    }
+
+    private Comparator<Product> sortyByPrice() {
+        return new Comparator<Product>() {
+            @Override
+            public int compare(Product p1, Product p2) {
+                return Double.compare(p1.getPrice(), p2.getPrice());
+            }
+        };
+    }
+
+    public void addProduct(Product product, int quantity) {
+        Integer alreadyOrdered = orders.get(product);
+        Integer temp = 0;
+        if (alreadyOrdered != null) {
+            temp += alreadyOrdered;
+        }
+        orders.put(product, temp + quantity);
+    }
+
+    public double total() {
         double total = 0;
         for (Map.Entry<Product, Integer> entry : orders.entrySet()) {
-            total+= entry.getValue() * entry.getKey().getPrice();
+            total += entry.getValue() * entry.getKey().getPrice();
         }
         return total;
     }
 
-    private void setupSwipeRefresh(final Context context){
+    private void setupSwipeRefresh(final Context context) {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -89,7 +147,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
 
     }
 
-    public static ProductListFragment newInstance(){
+    public static ProductListFragment newInstance() {
         return new ProductListFragment();
     }
 
@@ -105,7 +163,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
 
     @Override
     protected void displayContent(Context context) {
-        if(products!= null){
+        if (products != null) {
             displayProducts(products);
         }
     }
@@ -129,7 +187,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
 
     @Override
     public void showProducts(List<Product> products) {
-        if(products!= null){
+        if (products != null) {
             this.products = products;
             displayProducts(products);
         }
@@ -140,7 +198,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         showProductQuantitySpinner(product);
     }
 
-    private void showProductQuantitySpinner(final Product product){
+    private void showProductQuantitySpinner(final Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
 
@@ -156,9 +214,9 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         builder.setPositiveButton("Add To Cart", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                showToast(product.getName()+" : "+picker.getValue());
-                addProduct(product,picker.getValue());
-                showToast("total: "+total());
+                showToast(product.getName() + " : " + picker.getValue());
+                addProduct(product, picker.getValue());
+                showToast("total: " + total());
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -168,18 +226,20 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     }
 
     @OnClick(R.id.product_search_btn)
-    public void onSearchProductByNameButtonClicked(){
+    public void onSearchProductByNameButtonClicked() {
         String productName = productNameSearchInput.getText().toString();
-        if(productName.trim().length()>0){
+        if (productName.trim().length() > 0) {
             presenter.findProductByName(productName);
-        }else{
+        } else {
             showToast("fill in the product name");
         }
     }
 
-    private void displayProducts(@NonNull List<Product> products){
-        adapter = new ProductRecyclerViewAdapter(products, getContext(), this);
-        productRecyclerView.setLayoutManager(new LinearLayoutManager(productRecyclerView.getContext()));
-        productRecyclerView.setAdapter(adapter);
+    private void displayProducts(@NonNull List<Product> products) {
+        if (products != null) {
+            adapter = new ProductRecyclerViewAdapter(products, getContext(), this);
+            productRecyclerView.setLayoutManager(new LinearLayoutManager(productRecyclerView.getContext()));
+            productRecyclerView.setAdapter(adapter);
+        }
     }
 }

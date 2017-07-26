@@ -10,7 +10,7 @@ import retrofit2.http.Path;
 
 public interface ProductRepository {
 
-    @GET("products")
+    @GET("cloudant")
     Call<List<Product>> findAll();
 
     @GET("products/name/{name}")
