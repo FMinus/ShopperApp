@@ -40,6 +40,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import java8.util.stream.Collector;
 import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 

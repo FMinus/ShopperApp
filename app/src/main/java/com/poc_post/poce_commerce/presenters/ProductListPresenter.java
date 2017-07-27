@@ -10,8 +10,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Observer;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+
 
 public class ProductListPresenter extends BasePresenter implements ProductListContract.UserActionsListener , Observer<List<Product>> {
 
@@ -38,13 +41,18 @@ public class ProductListPresenter extends BasePresenter implements ProductListCo
     }
 
     @Override
-    public void onCompleted() {
+    public void onError(Throwable e) {
+        Log.e(TAG, "onFailure: ", e);
+    }
+
+    @Override
+    public void onComplete() {
 
     }
 
     @Override
-    public void onError(Throwable e) {
-        Log.e(TAG, "onFailure: ", e);
+    public void onSubscribe(@NonNull Disposable d) {
+
     }
 
     @Override

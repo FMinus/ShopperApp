@@ -28,7 +28,6 @@ android {
 }
 
 def support_lib_version = '26.0.0-alpha1'
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -49,11 +48,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    // https://mvnrepository.com/artifact/com.squareup.retrofit2/adapter-rxjava
 
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.2'
-    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
@@ -62,10 +60,6 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     provided "org.projectlombok:lombok:1.16.18"
 
-    //rxjava
-//    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
-//    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-
     // unit testing libraries
     testCompile 'junit:junit:4.12'
 
@@ -73,3 +67,4 @@ dependencies {
 
 
 }
+

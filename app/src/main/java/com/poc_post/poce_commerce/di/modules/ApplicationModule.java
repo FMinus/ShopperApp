@@ -11,7 +11,7 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
@@ -50,13 +50,13 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    RxJavaCallAdapterFactory provideRxAdapterFactory() {
-        return RxJavaCallAdapterFactory.create();
+    RxJava2CallAdapterFactory provideRxAdapterFactory() {
+        return RxJava2CallAdapterFactory.create();
     }
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(OkHttpClient client, GsonConverterFactory converterFactory,RxJavaCallAdapterFactory rxJavaCallAdapterFactory) {
+    Retrofit provideRetrofit(OkHttpClient client, GsonConverterFactory converterFactory,RxJava2CallAdapterFactory rxJavaCallAdapterFactory) {
         return new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(converterFactory)
