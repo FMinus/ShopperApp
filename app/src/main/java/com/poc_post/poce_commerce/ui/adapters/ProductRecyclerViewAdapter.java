@@ -1,4 +1,4 @@
-package com.poc_post.poce_commerce.adapters;
+package com.poc_post.poce_commerce.ui.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.poc_post.poce_commerce.R;
-import com.poc_post.poce_commerce.screen_contracts.ProductListContract;
+import com.poc_post.poce_commerce.ui.screen_contracts.ProductListContract;
 import com.poc_post.poce_commerce.entities.Product;
 
 import java.util.List;

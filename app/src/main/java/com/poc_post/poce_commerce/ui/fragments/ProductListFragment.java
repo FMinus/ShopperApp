@@ -1,8 +1,8 @@
-package com.poc_post.poce_commerce.fragments;
+package com.poc_post.poce_commerce.ui.fragments;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,16 +20,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.poc_post.poce_commerce.R;
-import com.poc_post.poce_commerce.adapters.ProductRecyclerViewAdapter;
-import com.poc_post.poce_commerce.screen_contracts.ProductListContract;
 import com.poc_post.poce_commerce.di.components.DaggerProductComponent;
 import com.poc_post.poce_commerce.di.modules.ProductModule;
 import com.poc_post.poce_commerce.entities.Product;
 import com.poc_post.poce_commerce.presenters.ProductListPresenter;
+import com.poc_post.poce_commerce.ui.adapters.ProductRecyclerViewAdapter;
+import com.poc_post.poce_commerce.ui.screen_contracts.ProductListContract;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,8 +39,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import java8.util.stream.Collector;
-import java8.util.stream.Collectors;
 import java8.util.stream.StreamSupport;
 
 public class ProductListFragment extends BaseFragment implements ProductListContract.View {
@@ -56,6 +53,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     @BindView(R.id.productName_search_input) EditText productNameSearchInput;
     @BindView(R.id.products_list_sort_spinner) Spinner sortBySpinner;
     @BindView(R.id.orders_overview) TextView ordersOverview;
+    private ProgressDialog progressDialog;
 
     Map<Product, Integer> orders = new HashMap<>();
 
@@ -90,8 +88,8 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     private void sortProducts(Comparator<Product> comparator) {
         if (products != null) {
             Collections.sort(products, comparator);
+            displayProducts(products);
         }
-        displayProducts(products);
     }
 
     private void sortProducts(String selectedOption) {
@@ -103,21 +101,11 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     }
 
     private Comparator<Product> sortyByName() {
-        return new Comparator<Product>() {
-            @Override
-            public int compare(Product p1, Product p2) {
-                return p1.getName().compareTo(p2.getName());
-            }
-        };
+        return (p1, p2) -> p1.getName().compareTo(p2.getName());
     }
 
     private Comparator<Product> sortyByPrice() {
-        return new Comparator<Product>() {
-            @Override
-            public int compare(Product p1, Product p2) {
-                return Double.compare(p1.getPrice(), p2.getPrice());
-            }
-        };
+        return (p1, p2) -> Double.compare(p1.getPrice(), p2.getPrice());
     }
 
     public void addProduct(Product product, int quantity) {
@@ -136,12 +124,9 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
     }
 
     private void setupSwipeRefresh(final Context context) {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                computeFreshData(context);
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            computeFreshData(context);
+            swipeRefreshLayout.setRefreshing(false);
         });
 
         swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -181,6 +166,7 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
 
     @Override
     protected void computeFreshData(Context context) {
+        toggleProgressBar(true);
         presenter.findAllProducts();
     }
 
@@ -210,6 +196,24 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         showProductQuantitySpinner(product);
     }
 
+    @Override
+    public void toggleProgressBar(boolean isVisible) {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(true);
+        }
+        if(isVisible){
+            progressDialog.setMessage("Loading...");
+            progressDialog.show();
+        }else{
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        }
+    }
+
+
     private void showProductQuantitySpinner(final Product product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
@@ -223,14 +227,11 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 Gravity.CENTER));
         builder.setView(parent);
-        builder.setPositiveButton("Add To Cart", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                showToast(product.getName() + " : " + picker.getValue());
-                addProduct(product, picker.getValue());
-                showToast("total: " + total(orders));
-                updateOverview(orders);
-            }
+        builder.setPositiveButton("Add To Cart", (dialogInterface, i) -> {
+            showToast(product.getName() + " : " + picker.getValue());
+            addProduct(product, picker.getValue());
+            showToast("total: " + total(orders));
+            updateOverview(orders);
         });
         builder.setNegativeButton("Cancel", null);
 
@@ -243,6 +244,8 @@ public class ProductListFragment extends BaseFragment implements ProductListCont
         String productName = productNameSearchInput.getText().toString();
         if (productName.trim().length() > 0) {
             presenter.findProductByName(productName);
+            toggleProgressBar(true);
+            hideKeyBoard();
         } else {
             showToast("fill in the product name");
         }

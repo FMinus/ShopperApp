@@ -1,16 +1,14 @@
-package com.poc_post.poce_commerce.activities;
+package com.poc_post.poce_commerce.ui.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.poc_post.poce_commerce.application.ECommerceApplication;
+import com.poc_post.poce_commerce.application.ShoppingApplication;
 import com.poc_post.poce_commerce.di.components.ApplicationComponent;
 
 import butterknife.ButterKnife;
@@ -19,9 +17,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @LayoutRes
     public abstract int getContentViewLayout();
-
-    @IdRes
-    public abstract int getFrameLayoutId();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +45,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected ApplicationComponent getApplicationComponent() {
-        return ((ECommerceApplication) getApplication()).getApplicationComponent();
+        return ((ShoppingApplication) getApplication()).getApplicationComponent();
     }
 }

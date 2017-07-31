@@ -2,7 +2,7 @@ package com.poc_post.poce_commerce.di.components;
 
 import com.poc_post.poce_commerce.di.modules.ProductModule;
 import com.poc_post.poce_commerce.di.scopes.PerActivity;
-import com.poc_post.poce_commerce.fragments.ProductListFragment;
+import com.poc_post.poce_commerce.ui.fragments.ProductListFragment;
 
 import dagger.Component;
 

@@ -1,6 +1,6 @@
 package com.poc_post.poce_commerce.di.modules;
 
-import com.poc_post.poce_commerce.screen_contracts.ProductListContract;
+import com.poc_post.poce_commerce.ui.screen_contracts.ProductListContract;
 import com.poc_post.poce_commerce.di.scopes.PerActivity;
 import com.poc_post.poce_commerce.presenters.ProductListPresenter;
 import com.poc_post.poce_commerce.repositories.ProductRepository;

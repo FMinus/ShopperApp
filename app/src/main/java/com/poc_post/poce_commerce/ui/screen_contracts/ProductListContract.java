@@ -1,4 +1,4 @@
-package com.poc_post.poce_commerce.screen_contracts;
+package com.poc_post.poce_commerce.ui.screen_contracts;
 
 import com.poc_post.poce_commerce.entities.Product;
 
@@ -11,6 +11,7 @@ public interface ProductListContract {
         void showProducts(List<Product> products);
         void showProduct(Product product);
         void addProductToCart(Product product);
+        void toggleProgressBar(boolean isVisible);
     }
 
     interface UserActionsListener {

@@ -7,11 +7,17 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.poc_post.poce_commerce.activities.MainActivity">
+    tools:context=".ui.activities.MainActivity">
 
-    <FrameLayout
-        android:id="@+id/main_frame"
+    <!--<FrameLayout-->
+        <!--android:id="@+id/main_frame"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--/>-->
+
+    <fragment
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        class="com.poc_post.poce_commerce.ui.fragments.ProductListFragment"/>
 </RelativeLayout>

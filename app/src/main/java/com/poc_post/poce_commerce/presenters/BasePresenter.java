@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public abstract class BasePresenter {
 
+
     protected <T> void subscribe(Observable<T> observable, Observer<T> observer) {
         observable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

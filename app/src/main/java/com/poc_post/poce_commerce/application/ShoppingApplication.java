@@ -7,7 +7,7 @@ import com.poc_post.poce_commerce.di.components.DaggerApplicationComponent;
 import com.poc_post.poce_commerce.di.modules.ApplicationModule;
 
 
-public class ECommerceApplication extends Application {
+public class ShoppingApplication extends Application {
 
     private ApplicationComponent mApplicationComponent;
 
