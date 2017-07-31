@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
@@ -34,8 +35,19 @@ public class ProductListPresenter extends BasePresenter implements ProductListCo
         subscribe(products, this);
     }
 
+    public void findAllProducts(Scheduler subscribeOn, Scheduler observeOn) {
+        Observable<List<Product>> products = productRepository.findAll();
+        products.blockingIterable();
+        subscribe(products, this, subscribeOn, observeOn);
+    }
+
     @Override
     public void findProductByName(String productName) {
+        Observable<List<Product>> productsByName = productRepository.findByName(productName);
+        subscribe(productsByName, this);
+    }
+
+    public void findProductByName(String productName, Scheduler subscribeOn, Scheduler observeOn) {
         Observable<List<Product>> productsByName = productRepository.findByName(productName);
         subscribe(productsByName, this);
     }
