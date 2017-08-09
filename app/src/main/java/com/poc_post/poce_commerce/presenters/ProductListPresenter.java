@@ -37,7 +37,6 @@ public class ProductListPresenter extends BasePresenter implements ProductListCo
 
     public void findAllProducts(Scheduler subscribeOn, Scheduler observeOn) {
         Observable<List<Product>> products = productRepository.findAll();
-        products.blockingIterable();
         subscribe(products, this, subscribeOn, observeOn);
     }
 
